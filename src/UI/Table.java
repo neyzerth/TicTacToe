@@ -5,10 +5,26 @@ import java.util.Scanner;
 
 public class Table {
     private Player [][] rows = new Player [3][3];
-    private int turn;
     private Player[] player = Player.values();
+    private int turn;
+    private int [] winLine = new int[3];
+    private boolean endedGame = false;
 
     public void printTable(){
+        int i = 0;
+        String [] draw = new String[9];
+        for (Player[] row : rows) {
+            for (Player p : row) {
+                draw[i] = p == null ? " " : p.symbol();
+                if(this.winLine != null && endedGame)
+                    for (int win : this.winLine) {
+                        draw[i] = win == i ? Color.inverted(draw[i]) : draw[i];
+                    }
+
+                i++;
+            }
+        }
+
         String table = String.format(
             "   1   2   3     \n"+
             "a  %s │ %s │ %s  \n"+
@@ -17,11 +33,10 @@ public class Table {
              "  ───┼───┼───   \n"+
             "c  %s │ %s │ %s  \n",
 
-            rows[0][0], rows[0][1], rows[0][2],
-            rows[1][0], rows[1][1], rows[1][2],
-            rows[2][0], rows[2][1], rows[2][2]
+            (Object[]) draw
         );
-        System.out.println(table.replace("null", " "));
+
+        System.out.println(table);
     }
     @SuppressWarnings("resource")
     public void play(){
@@ -57,13 +72,19 @@ public class Table {
             }
         }
         clear();
-        System.out.println(Color.inverted(Color.colorText(winner.color(),"  WINNER " + winner + "!!!")));
+        if(winner != null){
+            this.endedGame = true;
+            System.out.println(Color.inverted(Color.colorText(winner.color(),"  WINNER " + winner + "!!!")));
+        }
+        else
+            System.out.println(Color.inverted("-  DRAW  -"));
+
         printTable();
     }
 
     private void position(String pos, Player p){
         if(pos.length() != 2)
-            throw new IllegalArgumentException("AAAA");
+            throw new IllegalArgumentException("Invalid position format: " + pos);
         int a = pos.charAt(0) - 97;
         int b = pos.charAt(1) - 49;
         
@@ -72,11 +93,11 @@ public class Table {
     private void position(int a, int b, Player p){
         
         if(a < 0 || a > 2)
-            throw new IllegalArgumentException("No valido");
+            throw new IllegalArgumentException("Invalid Row");
         if(b < 0 || b > 2)
-            throw new IllegalArgumentException("No valido");
+            throw new IllegalArgumentException("Invalid column");
         if(this.rows[a][b] != null)
-            throw new IllegalArgumentException("otra pos");
+            throw new IllegalArgumentException("This position isn't blank!");
 
         this.rows[a][b] = p;
     }
@@ -101,35 +122,51 @@ public class Table {
 
     private Player searchWin(){
         Player winner = null;
+        int j = 0;
 
         //search for each player (X & O)
         for (Player p : this.player){
+            j = 0;
             //Search horizontally
-            for (Player[] row : rows) 
-                if(p == row[0] && p == row[1] && p == row[2])
+            for (Player[] row : rows) {
+                if(p == row[0] && p == row[1] && p == row[2]){
+                    this.winLine[0] = j;
+                    this.winLine[1] = j+1;
+                    this.winLine[2] = j+2;
                     return p;
+                }
+                j+=3;
+            }
                 
             //Search vertically
             for (int i = 0; i < 3; i++) {
-                if(p == rows[0][i] && p == rows[1][i] && p == rows[2][i])
+                if(p == rows[0][i] && p == rows[1][i] && p == rows[2][i]){
+                    this.winLine[0] = i;
+                    this.winLine[1] = i+3;
+                    this.winLine[2] = i+6;
                     return p;
+                }
             }
 
-            //Search vertically
+            //Search diagonally
             //First, evaluate if have one in the center
             if(p == rows[1][1]){
                 //search if is \
-                if(p == rows[0][0] && p == rows[2][2])
+                if(p == rows[0][0] && p == rows[2][2]){
+                    this.winLine[0] = 0;
+                    this.winLine[1] = 5;
+                    this.winLine[2] = 9;
                     return p;   
+                }
                 //search if is /
-                if(p == rows[0][2] && p == rows[2][0])
+                if(p == rows[0][2] && p == rows[2][0]){
+                    this.winLine[0] = 3;
+                    this.winLine[1] = 5;
+                    this.winLine[2] = 7;
                     return p;
+                }
             }
-
-
-        }
-            
-        
+        }      
 
         return winner;
     }
