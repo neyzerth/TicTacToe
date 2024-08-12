@@ -47,9 +47,6 @@ public class Table {
         this.turn = 0;
 
         while(turn < 9) {
-            if(turn >= 5) winner = searchWin();
-            if(winner != null) break;
-
             p = this.player[turn%2];
             
             
@@ -70,6 +67,9 @@ public class Table {
             } catch (Exception e) {
                 warning = e.getMessage();
             }
+            
+            if(turn >= 5) winner = searchWin();
+            if(winner != null) break;
         }
         clear();
         if(winner != null){
@@ -151,18 +151,17 @@ public class Table {
             //Search diagonally
             //First, evaluate if have one in the center
             if(p == rows[1][1]){
+                this.winLine[1] = 4;
                 //search if is \
                 if(p == rows[0][0] && p == rows[2][2]){
                     this.winLine[0] = 0;
-                    this.winLine[1] = 5;
-                    this.winLine[2] = 9;
+                    this.winLine[2] = 8;
                     return p;   
                 }
                 //search if is /
                 if(p == rows[0][2] && p == rows[2][0]){
-                    this.winLine[0] = 3;
-                    this.winLine[1] = 5;
-                    this.winLine[2] = 7;
+                    this.winLine[0] = 2;
+                    this.winLine[2] = 8;
                     return p;
                 }
             }

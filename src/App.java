@@ -10,7 +10,7 @@ public class App {
         do {
             Table table = new Table();
             table.play();
-            System.out.print("ENTER para nuevo juego..");
+            System.out.print("Press ENTER to play again...");
             scan.nextLine();
         } while (true);
     }
