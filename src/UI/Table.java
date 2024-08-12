@@ -1,17 +1,12 @@
 package UI;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Table {
     private Player [][] rows = new Player [3][3];
     private int turn;
     private Player[] player = Player.values();
-    private ArrayList<Integer> xPos = new ArrayList<>();
-    private ArrayList<Integer> oPos = new ArrayList<>();
-        
 
     public void printTable(){
         String table = String.format(
@@ -28,6 +23,7 @@ public class Table {
         );
         System.out.println(table.replace("null", " "));
     }
+    @SuppressWarnings("resource")
     public void play(){
         Scanner scan = new Scanner(System.in);
         Player p;
